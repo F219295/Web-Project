@@ -2,19 +2,32 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./Login.css"; // Import the login.css file
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock, faEnvelope, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
 
 export default function Signup() {
   const [value, setValue] = useState({
+    username: "",
     name: "",
     email: "",
     password: "",
+  });
+
+  const [errors, setErrors] = useState({
+    usernameError: "",
+    emailError: "",
+    errorMessage: "",
   });
 
   const handleChange = (e) => {
     setValue({
       ...value,
       [e.target.name]: e.target.value,
+    });
+    // Clear previous errors when user starts typing
+    setErrors({
+      usernameError: "",
+      emailError: "",
+      errorMessage: "",
     });
   };
 
@@ -24,14 +37,21 @@ export default function Signup() {
       const register = await axios.post("http://localhost:5000/register", value);
       console.log(register.data);
       setValue({
+        username: "",
         name: "",
         email: "",
         password: "",
       });
-      alert("Account created");
+  
     } catch (error) {
       console.error("Error during registration:", error.response.data.error);
-      alert("Registration failed. Please check your details and try again.");
+      if (error.response.data.error.includes("username")) {
+        setErrors({ ...errors, usernameError: "* Username already exists" });
+      } else if (error.response.data.error.includes("email")) {
+        setErrors({ ...errors, emailError: "* Email already exists" });
+      } else {
+        setErrors({ ...errors, errorMessage: error.response.data.error });
+      }
     }
   };
 
@@ -44,6 +64,18 @@ export default function Signup() {
             <i><FontAwesomeIcon icon={faUser} /></i>
             <input
               type="text"
+              placeholder="Username"
+              name="username"
+              value={value.username}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          <div className="error" style={{ color: "red" }}>{errors.usernameError}</div>
+          <div className="row">
+            <i><FontAwesomeIcon icon={faUser} /></i>
+            <input
+              type="text"
               placeholder="Name"
               name="name"
               value={value.name}
@@ -52,7 +84,7 @@ export default function Signup() {
             />
           </div>
           <div className="row">
-            <i> <FontAwesomeIcon icon={faEnvelope} /></i>
+            <i><FontAwesomeIcon icon={faEnvelope} /></i>
             <input
               type="email"
               placeholder="Email"
@@ -62,9 +94,9 @@ export default function Signup() {
               required
             />
           </div>
+          <div className="error" style={{ color: "red" }}>{errors.emailError}</div>
           <div className="row">
-         <i> <FontAwesomeIcon icon={faLock} /></i>
-
+            <i><FontAwesomeIcon icon={faLock} /></i>
             <input
               type="password"
               placeholder="Password"
@@ -77,6 +109,7 @@ export default function Signup() {
           <div className="row button">
             <input type="submit" value="Sign Up" />
           </div>
+          <div className="error" style={{ color: "red" }}>{errors.errorMessage}</div>
           <div className="row signup-link">
             Already have an account? <a href="#">Sign in</a>
           </div>

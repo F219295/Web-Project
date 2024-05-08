@@ -9,6 +9,11 @@ body{
   background: #c3eae2;
  
 }
+.button {
+  font-family:'Poppins',sans-serif;
+ 
+}
+
 ::selection{
   background: rgba(26,188,156,0.3);
 }
