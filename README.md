@@ -28,17 +28,19 @@ $ git clone https://github.com/F219295/Web-Project.git
 
 # Usage (run fullstack app on your machine)
 
-## Client-side and Server-side
+## Client-side
 ```terminal
 $ cd client          // go to client folder
 $ npm i    // npm install packages
 $ npm run dev        // run it locally
+```
+## Server-side
 
 ```terminal
 $ cd server          // go to server folder
 $ npm i    // npm install packages
 $ npm run dev        // run it locally
-
+```
 
 ### Screenshots of this project
 
