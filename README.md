@@ -44,7 +44,7 @@ $ npm run dev        // run it locally
 
 ### Screenshots of this project
 
-![image](https://github.com/F219295/Web-Project/assets/readme1)
+![image](https://github.com/F219295/Web-Project/assets/logo.png)
 ![image](https://github.com/F219295/Web-Project/assets/readme2)
 ![image](https://github.com/F219295/Web-Project/readme3)
 
