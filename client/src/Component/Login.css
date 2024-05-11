@@ -12,49 +12,4 @@
     max-height: 50px;
   }
   
-  .search {
-    margin-left: 20px;
-    position: relative;
-  }
-  
-  .search-input {
-    padding: 12px 40px 12px 40px;
-    border-radius: 30px;
-    border: none;
-    outline: none;
-    background-color: #fff;
-    width: 300px;
-  }
-  
-  .search-icon {
-    position: absolute;
-    top: 50%;
-    left: 15px;
-    transform: translateY(-50%);
-    color: #555;
-  }
-  
-  .icons {
-    display: flex;
-    align-items: center;
-  }
-  
-  .icons i {
-    font-size: 24px;
-    margin-right: 10px;
-    cursor: pointer;
-  }
-  
-  .profile-border,
-  .icon-border {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid #16a085;
-    margin-right: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #c3eae2;
-  }
   
