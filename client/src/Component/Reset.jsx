@@ -73,7 +73,10 @@ export default function ForgotPassword() {
               <input
                 type="text"
                 placeholder="Enter OTP"
-      
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                required
+              />
             </div>
             <div className="row button">
               <button type="submit" className="button">Submit</button>
