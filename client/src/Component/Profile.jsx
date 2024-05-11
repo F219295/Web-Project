@@ -5,7 +5,6 @@ const Profile = () => {
   return (
     <div className="profile-container">
       <div className="profile-wrapper">
-        <div className="profile-title">Profile</div>
         <div className="profile-top-bar">
           <div className="profile-logo">Logo</div>
           <div className="profile-search">
@@ -36,7 +35,9 @@ const Profile = () => {
               <div className="profile-pic">
                 <img src="profile-pic.jpg" alt="Profile Picture" />
               </div>
-              <div className="profile-user-name">John Doe</div>
+              <div className="profile-user-info">
+                <div className="profile-user-name">John Doe</div>
+              </div>
               <div className="profile-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
               <div className="profile-main-image">
                 <img src="main-image.jpg" alt="Main Image" />
