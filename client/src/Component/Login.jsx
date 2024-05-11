@@ -5,16 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faEnvelope, faUser } from '@fortawesome/free-solid-svg-icons';
 export default function Login() {
   const [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
-  });
-
-  const handleChange = (e) => {
-    setCredentials({
-      ...credentials,
-      [e.target.name]: e.target.value,
-    });
-  };
+   
 
   const handleSubmit = async (e) => {
     e.preventDefault();
