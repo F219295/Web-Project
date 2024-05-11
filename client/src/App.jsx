@@ -7,8 +7,7 @@ export default function App() {
   return (
     <>
   <Signup></Signup>
-      <Login></Login>
-      <Reset></Reset>
+      
     </>
   );
 }
