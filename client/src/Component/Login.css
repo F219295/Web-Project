@@ -152,3 +152,141 @@ form .signup-link a:hover{
 .submit-button:hover {
   background-color: #0056b3;
 }
+
+
+
+
+.profile-container {
+  max-width: 100%;
+  padding: 0 20px;
+  margin: 80px auto;
+}
+
+.profile-wrapper {
+  width: 100%;
+  background: #fff;
+  border-radius: 5px;
+  box-shadow: 0px 4px 10px 1px rgba(0,0,0,0.1);
+}
+
+.profile-title {
+  height: 90px;
+  background: #16a085;
+  border-radius: 5px 5px 0 0;
+  color: #fff;
+  font-size: 30px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-top-bar {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.profile-logo {
+  margin-right: auto;
+  padding: 10px;
+}
+
+.profile-search {
+  flex-grow: 1;
+  margin: 0 10px;
+}
+
+.profile-search input {
+  width: 100%;
+  height: 100%;
+  outline: none;
+  border-radius: 5px;
+  border: 1px solid lightgrey;
+  padding: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.profile-icons {
+  display: flex;
+}
+
+.profile-icons i {
+  font-size: 20px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.profile-section {
+  display: flex;
+}
+
+.profile-left-section {
+  width: 30%;
+  padding: 20px;
+}
+
+.profile-right-section {
+  width: 70%;
+  padding: 20px;
+}
+
+.profile-heading {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.profile-friend-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-gap: 10px;
+}
+
+.profile-friend {
+  text-align: center;
+}
+
+.profile-friend img {
+  max-width: 200px;
+  border-radius: 50%;
+}
+
+.profile-name {
+  margin-top: 5px;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-pic img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.profile-user-name {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 10px 0;
+}
+
+.profile-caption {
+  margin-bottom: 10px;
+}
+
+.profile-main-image img {
+  width: 100%;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.profile-actions i {
+  font-size: 20px;
+  margin-right: 10px;
+  cursor: pointer;
+}
