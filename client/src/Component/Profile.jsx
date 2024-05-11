@@ -1,20 +1,14 @@
 import React from 'react';
+import Navbar from './Navbar';
+import Footer from './Footer';
 import './Login.css'; // Import your CSS file
 
 const Profile = () => {
   return (
     <div className="profile-container">
       <div className="profile-wrapper">
-        <div className="profile-top-bar">
-          <div className="profile-logo">Logo</div>
-          <div className="profile-search">
-            <input type="text" placeholder="Search" />
-          </div>
-          <div className="profile-icons">
-            <i className="fas fa-envelope"></i>
-            <i className="fas fa-bell"></i>
-          </div>
-        </div>
+        <Navbar></Navbar>
+      
         <div className="profile-section">
           <div className="profile-left-section">
             <div className="profile-heading">Friend List</div>

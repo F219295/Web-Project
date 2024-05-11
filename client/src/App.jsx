@@ -3,7 +3,7 @@ import Signup from "./Component/Signup";
 import "./App.css";
 import Login from "./Component/Login";
 import Reset from "./Component/Reset";
-import Home from "./Component/home";
+
 import Profile from "./Component/Profile";
 
 
@@ -14,7 +14,7 @@ export default function App() {
   <Signup></Signup>
       <Login></Login>
       <Reset></Reset>
-      <Home></Home>
+   
       <Profile></Profile>
     </>
   );
