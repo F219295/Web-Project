@@ -8,13 +8,7 @@ const Navbar = () => {
     <div className="navbar">
       <div className="logo">
       <img src={logo} alt="Logo" />
-      </div>
-      <div className="search">
-        <input type="text" placeholder="Search" className="search-input" />
-       
-      </div>
-      <div className="icons">
-      
+    
         <div className="icon-border">
           <i><FontAwesomeIcon icon={faEnvelope} /></i>
         </div>
