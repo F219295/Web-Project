@@ -350,7 +350,7 @@ form .signup-link a:hover{
 .navbar {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Align items at the start and end of the navbar */
+ /* Align items at the start and end of the navbar */
   padding: 10px;
   background-color: #16a085 !important;
 }
@@ -362,8 +362,9 @@ form .signup-link a:hover{
 }
 
 .search {
-  margin-left: 20px;
+  
   position: relative;
+  margin-left: 20px;
 }
 
 .search-input {
@@ -378,24 +379,25 @@ form .signup-link a:hover{
 .search-icon {
   position: absolute;
   top: 50%;
-  left: 15px;
+ 
   transform: translateY(-50%);
   color: #555;
 }
-
 .icons {
   display: flex;
   align-items: center;
+  margin-left: auto; /* Move icons to the most right */
   width: 200px;
   height: 50px;
-  margin-top: 15px;
+  margin-top: 12px;
 }
+
 .icons2 {
   display: flex;
   align-items: center;
   width: 200px;
   height: 50px;
-  margin-top: 5px;
+  margin-top: 3px;
 }
 .icons i {
   font-size: 25px;
