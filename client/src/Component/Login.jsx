@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./Login.css"; // Import the login.css file
+import "./Login.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock, faEnvelope, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
-export default function Login() {
+const Login = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",
@@ -25,8 +25,17 @@ export default function Login() {
     e.preventDefault();
     try {
       const response = await axios.post("http://localhost:5000/login", credentials);
-      console.log(response.data);
-     
+      if (response.status === 200) {
+        const { user } = response.data;
+        if (onLogin) {
+          onLogin(user);
+        }
+        sessionStorage.setItem("userId", user._id); // Store userId in session storage
+        setSuccessMessage("Login successful");
+        console.log("Stored userId:", sessionStorage.getItem("userId")); // Log stored userId
+      } else {
+        setErrorMessage("Failed to login");
+      }
     } catch (error) {
       console.error("Error during login:", error.response.data.error);
       setErrorMessage("* Wrong Email or Password");
@@ -73,3 +82,5 @@ export default function Login() {
     </div>
   );
 }
+
+export default Login;

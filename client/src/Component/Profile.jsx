@@ -1,49 +1,94 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import './Login.css'; // Import your CSS file
+import axios from 'axios'; // Import axios for HTTP requests
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUpload } from '@fortawesome/free-solid-svg-icons';
 
 const Profile = () => {
+  const [userData, setUserData] = useState(null);
+  const [caption, setCaption] = useState('');
+  const [image, setImage] = useState(null);
+  const [status, setStatus] = useState('');
+
+  useEffect(() => {
+    // Retrieve user data from session storage
+    const userId = sessionStorage.getItem("userId");
+    console.log("User Id from session storage:", userId);
+    if (userId) {
+      setUserData({ userId });
+      console.log("User Data:", { userId });
+    }
+  }, []);
+
+  const handleCaptionChange = (event) => {
+    setCaption(event.target.value);
+  };
+
+  const handleImageChange = (event) => {
+    setImage(event.target.files[0]);
+  };
+  const handlePost = async () => {
+    try {
+      // Check if user data exists
+      if (!userData || !userData.userId) {
+        console.error("User data not found");
+        return;
+      }
+  
+      // Check if caption is present
+      if (!caption) {
+        console.error("Caption is required");
+        return;
+      }
+  
+      const formData = new FormData();
+      formData.append('caption', caption); // Append the caption
+      formData.append('userId', userData.userId); // Append the userId
+  
+      // Make a POST request to the server to store the post
+      const response = await axios.post('http://localhost:5000/register', formData);
+  
+      if (response.status === 201) {
+        setStatus('Post stored successfully!');
+      } else {
+        setStatus('Failed to store post.');
+      }
+    } catch (error) {
+      console.error('Error posting:', error);
+      setStatus('Failed to store post.');
+    }
+  };
+  
+
   return (
     <div className="profile-container">
       <div className="profile-wrapper">
-        <Navbar></Navbar>
-      
+        <Navbar />
         <div className="profile-section">
           <div className="profile-left-section">
             <div className="profile-heading">Friend List</div>
             <div className="profile-friend-list">
-              <div className="profile-friend">
-                <img src="friend1.jpg" alt="Friend 1" />
-                <div className="profile-name">Friend 1</div>
-              </div>
-              <div className="profile-friend">
-                <img src="friend2.jpg" alt="Friend 2" />
-                <div className="profile-name">Friend 2</div>
-              </div>
-              {/* Add more friends as needed */}
+              {/* Check if friends array exists before mapping */}
+              {/* Place your friend list rendering logic here */}
             </div>
           </div>
           <div className="profile-right-section">
             <div className="profile-info">
-              <div className="profile-pic">
-                <img src="profile-pic.jpg" alt="Profile Picture" />
+              <div>
+                <input type="file" onChange={handleImageChange} />
+                <input type="text" value={caption} onChange={handleCaptionChange} placeholder="Enter caption" />
+                <button onClick={handlePost}>Post</button>
+                {status && <div className="status">{status}</div>}
               </div>
-              <div className="profile-user-info">
-                <div className="profile-user-name">John Doe</div>
-              </div>
-              <div className="profile-caption">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
-              <div className="profile-main-image">
-                <img src="main-image.jpg" alt="Main Image" />
-              </div>
-              <div className="profile-actions">
-                <i className="fas fa-thumbs-up"></i>
-                <i className="fas fa-comment"></i>
-              </div>
+              {/* Check if posts array exists before mapping */}
+              {/* Place your post rendering logic here */}
             </div>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

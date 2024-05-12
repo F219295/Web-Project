@@ -1,10 +1,12 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const multer = require("multer");
+const fs = require("fs");
+const path = require("path");
 const nodemailer = require("nodemailer");
-
-const PORT = 5000;
 const app = express();
+const PORT = 5000;
 const MONGODB_URI = "mongodb://localhost:27017/login";
 
 // Middleware
@@ -20,6 +22,55 @@ db.on("error", (err) => {
 db.once("open", () => {
   console.log("Mongodb is connected");
 });
+
+// Multer configuration
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
+
+// Schema for Post
+const postSchema = new mongoose.Schema({
+  caption: String,
+  image: { data: Buffer, contentType: String },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+});
+const Post = mongoose.model("Post", postSchema);
+
+// Handle POST requests to /post endpoint
+app.post("/post", async (req, res) => {
+  try {
+    // Extract data from the request body
+    const { caption, userId } = req.body;
+
+    // Check if caption and userId are present
+    if (!caption || !userId) {
+      return res.status(400).json({ error: "Caption and userId are required" });
+    }
+
+    // Create a new post document
+    const newPost = new Post({
+      caption,
+      user: userId
+    });
+
+    // Save the new post document to the database
+    await newPost.save();
+
+    // Send a success response
+    res.status(201).json({ message: "Post stored successfully", post: newPost });
+  } catch (error) {
+    console.error("Error storing post:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
 
 // Define user schema and model
 const userSchema = new mongoose.Schema({
@@ -39,6 +90,7 @@ const transporter = nodemailer.createTransport({
     pass: 'ahmed.9292',
   }
 });
+
 
 // Register endpoint
 app.post("/register", async (req, res) => {
