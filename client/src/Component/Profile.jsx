@@ -37,18 +37,23 @@ const Profile = () => {
         return;
       }
   
-      // Check if caption is present
-      if (!caption) {
-        console.error("Caption is required");
+      // Check if image and caption are present
+      if (!image || !caption) {
+        console.error("Image or caption is missing");
         return;
       }
   
       const formData = new FormData();
+      formData.append('image', image); // Append the image file
       formData.append('caption', caption); // Append the caption
       formData.append('userId', userData.userId); // Append the userId
   
       // Make a POST request to the server to store the post
-      const response = await axios.post('http://localhost:5000/register', formData);
+      const response = await axios.post('http://localhost:5000/post', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data' // Set the content type for FormData
+        }
+      });
   
       if (response.status === 201) {
         setStatus('Post stored successfully!');

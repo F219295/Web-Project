@@ -8,6 +8,7 @@ const nodemailer = require("nodemailer");
 const app = express();
 const PORT = 5000;
 const MONGODB_URI = "mongodb://localhost:27017/login";
+const mongoUrl = "mongodb+srv://mussadiqahmed90:HdrQBYCxoUuEbFL7@cluster0.feqaq2x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 // Middleware
 app.use(cors());
@@ -23,16 +24,7 @@ db.once("open", () => {
   console.log("Mongodb is connected");
 });
 
-// Multer configuration
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'uploads/');
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  }
-});
-const upload = multer({ storage: storage });
+
 
 // Schema for Post
 const postSchema = new mongoose.Schema({
@@ -43,7 +35,7 @@ const postSchema = new mongoose.Schema({
 const Post = mongoose.model("Post", postSchema);
 
 // Handle POST requests to /post endpoint
-app.post("/post", async (req, res) => {
+app.post("/post", upload.single('image'), async (req, res) => {
   try {
     // Extract data from the request body
     const { caption, userId } = req.body;
@@ -53,9 +45,21 @@ app.post("/post", async (req, res) => {
       return res.status(400).json({ error: "Caption and userId are required" });
     }
 
+    // Check if image file is uploaded
+    if (!req.file) {
+      return res.status(400).json({ error: "Image file is required" });
+    }
+
+    // Read image file
+    const image = {
+      data: fs.readFileSync(req.file.path),
+      contentType: req.file.mimetype
+    };
+
     // Create a new post document
     const newPost = new Post({
       caption,
+      image,
       user: userId
     });
 
@@ -238,4 +242,52 @@ app.get("/check-email", async (req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+});
+
+
+//importing schema
+require("./imageDetails");
+const Images = mongoose.model("ImageDetails");
+
+app.get("/", async (req, res) => {
+  res.send("Success!!!!!!");
+});
+
+
+//////////////////////////////////////////////////////////////
+
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "..client/src/assets/");
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now();
+    cb(null, uniqueSuffix + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+app.post("/upload-image", upload.single("image"), async (req, res) => {
+  console.log(req.body);
+  const imageName = req.file.filename;
+
+  try {
+    await Images.create({ image: imageName });
+    res.json({ status: "ok" });
+  } catch (error) {
+    res.json({ status: error });
+  }
+});
+
+app.get("/get-image", async (req, res) => {
+  try {
+    Images.find({}).then((data) => {
+      res.send({ status: "ok", data: data });
+    });
+  } catch (error) {
+    res.json({ status: error });
+  }
 });

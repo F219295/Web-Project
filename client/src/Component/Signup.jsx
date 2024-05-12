@@ -106,6 +106,7 @@ export default function Signup() {
               required
             />
           </div>
+          
           <div className="row button">
             <input type="submit" value="Sign Up" />
           </div>
