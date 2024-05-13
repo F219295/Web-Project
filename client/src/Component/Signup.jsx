@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
-import "./Login.css"; // Import the login.css file
+import "./Login.css"; // Import the Signup.css file
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUser, faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faEnvelope, faLock, faImage } from '@fortawesome/free-solid-svg-icons';
 
 export default function Signup() {
   const [value, setValue] = useState({
@@ -10,6 +10,7 @@ export default function Signup() {
     name: "",
     email: "",
     password: "",
+    profilePicture: null, // Add profilePicture field
   });
 
   const [errors, setErrors] = useState({
@@ -31,16 +32,35 @@ export default function Signup() {
     });
   };
 
+  const handleFileChange = (e) => {
+    setValue({
+      ...value,
+      profilePicture: e.target.files[0], // Set the selected file as profilePicture
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const register = await axios.post("http://localhost:5000/register", value);
+      const formData = new FormData(); // Create FormData object
+      formData.append("username", value.username);
+      formData.append("name", value.name);
+      formData.append("email", value.email);
+      formData.append("password", value.password);
+      formData.append("profilePicture", value.profilePicture); // Append profilePicture to FormData
+
+      const register = await axios.post("http://localhost:5000/register", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Set content type to multipart/form-data
+        },
+      });
       console.log(register.data);
       setValue({
         username: "",
         name: "",
         email: "",
         password: "",
+        profilePicture: null, // Reset profilePicture after successful registration
       });
   
     } catch (error) {
@@ -106,7 +126,15 @@ export default function Signup() {
               required
             />
           </div>
-          
+          <div className="row">
+            <i><FontAwesomeIcon icon={faImage} /></i>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              required
+            />
+          </div>
           <div className="row button">
             <input type="submit" value="Sign Up" />
           </div>

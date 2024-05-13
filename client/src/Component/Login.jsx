@@ -25,6 +25,7 @@ const Login = ({ onLogin }) => {
     e.preventDefault();
     try {
       const response = await axios.post("http://localhost:5000/login", credentials);
+      console.log("Response:", response); // Log the response to check its structure
       if (response.status === 200) {
         const { user } = response.data;
         if (onLogin) {
@@ -37,11 +38,11 @@ const Login = ({ onLogin }) => {
         setErrorMessage("Failed to login");
       }
     } catch (error) {
-      console.error("Error during login:", error.response.data.error);
+      console.error("Error during login:", error); // Log the entire error object
       setErrorMessage("* Wrong Email or Password");
     }
   };
-
+  
   return (
     <div className="container">
       <div className="wrapper">

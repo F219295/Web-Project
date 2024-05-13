@@ -8,11 +8,17 @@ const nodemailer = require("nodemailer");
 const app = express();
 const PORT = 5000;
 const MONGODB_URI = "mongodb://localhost:27017/login";
-const mongoUrl = "mongodb+srv://mussadiqahmed90:HdrQBYCxoUuEbFL7@cluster0.feqaq2x.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+app.use('/assets', express.static(path.join(__dirname, 'client', 'src', 'assets')));
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+const upload = multer({ dest: 'uploads/' });
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'uploads')));
 
 // Database connection
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -24,68 +30,28 @@ db.once("open", () => {
   console.log("Mongodb is connected");
 });
 
-
-
 // Schema for Post
 const postSchema = new mongoose.Schema({
   caption: String,
-  image: { data: Buffer, contentType: String },
+  imagePath: String,
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 });
 const Post = mongoose.model("Post", postSchema);
 
-// Handle POST requests to /post endpoint
-app.post("/post", upload.single('image'), async (req, res) => {
-  try {
-    // Extract data from the request body
-    const { caption, userId } = req.body;
-
-    // Check if caption and userId are present
-    if (!caption || !userId) {
-      return res.status(400).json({ error: "Caption and userId are required" });
-    }
-
-    // Check if image file is uploaded
-    if (!req.file) {
-      return res.status(400).json({ error: "Image file is required" });
-    }
-
-    // Read image file
-    const image = {
-      data: fs.readFileSync(req.file.path),
-      contentType: req.file.mimetype
-    };
-
-    // Create a new post document
-    const newPost = new Post({
-      caption,
-      image,
-      user: userId
-    });
-
-    // Save the new post document to the database
-    await newPost.save();
-
-    // Send a success response
-    res.status(201).json({ message: "Post stored successfully", post: newPost });
-  } catch (error) {
-    console.error("Error storing post:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
-
-
-
 // Define user schema and model
 const userSchema = new mongoose.Schema({
-  username: { type: String, unique: true }, // Adding unique constraint for username field
+  username: { type: String, unique: true },
   name: String,
-  email: { type: String, unique: true }, // Adding unique constraint for email field
+  email: { type: String, unique: true },
   password: String,
-  otp: String // Adding OTP field to user schema
+  profilePicture: String, // Add profilePicture field
 });
 const User = mongoose.model("User", userSchema);
 
+
+
+
+module.exports = User;
 // Nodemailer transporter setup
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -95,9 +61,143 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/') // Directory where uploaded files will be stored
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname) // Generate unique file name
+  }
+});
 
-// Register endpoint
-app.post("/register", async (req, res) => {
+const uploadImage = multer({ storage: storage });
+
+app.post('/profile', uploadImage.single('image'), async (req, res) => {
+  try {
+    // Check if user data exists
+    if (!req.body.userId) {
+      return res.status(400).json({ error: 'User data not found' });
+    }
+
+    // Check if image and caption are present
+    if (!req.file || !req.body.caption) {
+      return res.status(400).json({ error: 'Image or caption is missing' });
+    }
+
+    // Save the image path and caption to the database
+    const imagePath = req.file.filename; // Use the filename provided by multer
+    const newPost = new Post({
+      caption: req.body.caption,
+      imagePath,
+      user: req.body.userId
+    });
+    await newPost.save();
+
+    return res.status(201).json({ message: 'Post stored successfully' });
+  } catch (error) {
+    console.error('Error posting:', error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+});
+app.get("/posts/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Find posts associated with the specified user ID
+    const posts = await Post.find({ user: userId });
+    posts.forEach(post => {
+      console.log(`Image path: server/uploads/${post.imagePath}`);
+    });
+    // Update image paths to include the base URL
+    const updatedPosts = posts.map(post => ({
+      ...post.toObject(),
+      imagePath: `${path.basename(post.imagePath)}`
+    }));
+
+    res.status(200).json(updatedPosts);
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get('/users/:userId', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+app.get('/users/:userId', async (req, res) => {
+  try {
+    // Extract userId from the request parameters
+    const userId = req.params.userId;
+
+    // Find user by ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Extract user data
+    const userData = {
+      username: user.username,
+      name: user.name,
+      email: user.email
+    };
+
+    // Send user data in the response
+    res.json(userData);
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Add this route definition to your Express server setup
+
+app.post("/add-friend", async (req, res) => {
+  try {
+    const { userId, friendId } = req.body;
+
+    // Find the user by userId
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if the friendId exists in the user's friend list
+    if (user.friends.includes(friendId)) {
+      return res.status(400).json({ error: "User is already a friend" });
+    }
+
+    // Add the friendId to the user's friend list
+    user.friends.push(friendId);
+    await user.save();
+
+    res.status(200).json({ message: "Friend added successfully" });
+  } catch (error) {
+    console.error("Error adding friend:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+
+app.get('/users', async (req, res) => {
+  try {
+    // Fetch all users from the database
+    const users = await User.find();
+    res.json(users);
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post("/register", uploadImage.single('profilePicture'), async (req, res) => {
   try {
     // Check if username already exists
     const existingUsername = await User.findOne({ username: req.body.username });
@@ -117,6 +217,7 @@ app.post("/register", async (req, res) => {
       name: req.body.name,
       email: req.body.email,
       password: req.body.password,
+      profilePicture: req.file.filename, // Store the profile picture filename
     });
     const savedUser = await newUser.save();
     res.status(201).json(savedUser);
@@ -125,7 +226,6 @@ app.post("/register", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 // Login endpoint
 app.post("/login", async (req, res) => {
@@ -151,7 +251,7 @@ app.post("/login", async (req, res) => {
 app.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
-    
+
     // Generate a random OTP (One-Time Password)
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
@@ -167,7 +267,7 @@ app.post("/forgot-password", async (req, res) => {
     };
 
     // Send the email
-    transporter.sendMail(mailOptions, function(error, info){
+    transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         console.log(error);
         res.status(500).json({ error: "Failed to send OTP" });
@@ -242,52 +342,4 @@ app.get("/check-email", async (req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-});
-
-
-//importing schema
-require("./imageDetails");
-const Images = mongoose.model("ImageDetails");
-
-app.get("/", async (req, res) => {
-  res.send("Success!!!!!!");
-});
-
-
-//////////////////////////////////////////////////////////////
-
-const multer = require("multer");
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "..client/src/assets/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now();
-    cb(null, uniqueSuffix + file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
-
-app.post("/upload-image", upload.single("image"), async (req, res) => {
-  console.log(req.body);
-  const imageName = req.file.filename;
-
-  try {
-    await Images.create({ image: imageName });
-    res.json({ status: "ok" });
-  } catch (error) {
-    res.json({ status: error });
-  }
-});
-
-app.get("/get-image", async (req, res) => {
-  try {
-    Images.find({}).then((data) => {
-      res.send({ status: "ok", data: data });
-    });
-  } catch (error) {
-    res.json({ status: error });
-  }
 });
