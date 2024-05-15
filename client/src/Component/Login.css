@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins&family=Syncopate:wght@400;700&display=swap");
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
 *{
   margin: 0;
   padding: 0;
@@ -6,11 +7,23 @@
   font-family: 'Poppins',sans-serif;
 }
 body{
-  background: #c3eae2;
- 
+}
+
+:root{
+  --body-font: "Montserrat", sans-serif;
+  --second-font: "Syncopate", sans-serif;
+  --third-font: "Poppins", sans-serif;
+  
+}
+.second-font {
+  font-family: var(--third-font);
+}
+.third-font {
+  font-family: var(--second-font);
+  padding-top: 10px;
 }
 .button {
-  font-family:'Poppins',sans-serif;
+  font-family:'Montserrat',sans-serif;
  
 }
 
@@ -160,7 +173,7 @@ form .signup-link a:hover{
 
 .profile-wrapper {
   width: 100%;
-  background:#c3eae2;
+
   border-radius: 5px;
   box-shadow: 0px 4px 10px 1px rgba(0,0,0,0.1);
 }
@@ -226,16 +239,12 @@ form .signup-link a:hover{
   width: 100px;
   height: 100px;
   border-radius: 50%;
+  border: 2px solid #16a085;
 }
 
 
 
-.profile-wrapper {
-  width: 100%;
-  background: #c3eae2;
-  border-radius: 5px;
-  box-shadow: 0px 4px 10px 1px rgba(0,0,0,0.1);
-}
+
 
 .profile-title {
   height: 90px;
@@ -353,14 +362,18 @@ form .signup-link a:hover{
 }
 .post-grid {
 
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 4px rgba(194, 238, 193, 0.1);
   padding:0px 100px 0px 100px;
 }
+.color{
+  color: #16a085;
+  font-family: var(--second-font);
 
+}
 .search {
   
   position: relative;
-  margin-left: 20px;
+  margin-left: 30px;
 }
 
 .search-input {
@@ -385,7 +398,7 @@ form .signup-link a:hover{
   margin-left: auto; /* Move icons to the most right */
   width: 200px;
   height: 50px;
-  margin-top: 12px;
+  margin-top: 0px;
 }
 
 .icons2 {

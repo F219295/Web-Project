@@ -10,6 +10,7 @@ const Profile = () => {
   const [status, setStatus] = useState('');
   const [posts, setPosts] = useState([]);
   const [profilePicture, setProfilePicture] = useState('');
+  const [friendList, setFriendList] = useState([]);
 
   useEffect(() => {
     // Retrieve user data from session storage
@@ -20,6 +21,7 @@ const Profile = () => {
       console.log("User Data:", { userId });
       fetchPosts(userId); // Fetch posts for the user
       fetchUserProfile(userId); // Fetch user profile data
+      fetchFriendList(userId); // Fetch friend list for the user
     }
   }, []);
 
@@ -43,6 +45,15 @@ const Profile = () => {
       setProfilePicture(`http://localhost:5000/uploads/${response.data.profilePicture}`);
     } catch (error) {
       console.error('Error fetching user profile:', error);
+    }
+  };
+
+  const fetchFriendList = async (userId) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/friends/${userId}`);
+      setFriendList(response.data); // Set the friend list for the user
+    } catch (error) {
+      console.error('Error fetching friend list:', error);
     }
   };
 
@@ -98,20 +109,26 @@ const Profile = () => {
         <Navbar profilePicture={profilePicture} />
         <div className="profile-section">
           <div className="profile-left-section">
-            <div className="profile-heading">Friend List</div>
+            <div className="profile-heading third-font">Friend <span className='color'>List</span></div>
             <div className="profile-friend-list">
-              {/* Check if friends array exists before mapping */}
-              {/* Map through friends array to render profile images and names */}
-              {/* Place your friend list rendering logic here */}
+              {friendList.map((friend) => (
+                <div key={friend._id} style={{ textAlign: 'center', marginTop: '20px', padding: '10px', border: '2px solid #16a085', borderRadius: '5px' }}>
+                  <div style={{ marginBottom: '2px' }}>
+                    <img src={`http://localhost:5000/uploads/${friend.profilePicture}`} alt="Profile" style={{ width: '150px', height: '150px', borderRadius: '10%', marginBottom: '10px' }} />
+                  </div>
+                  <p style={{ fontWeight: 'bold', marginBottom: '10px' }}>{friend.name}</p>
+                </div>
+              ))}
             </div>
           </div>
           <div className="profile-right-section">
             <div className="profile-info">
               <div>
+              <div className="profile-heading third-font">New <span className='color'>Post</span></div>
                 <h3 style={{marginTop: '30px'}}>Enter the Image : </h3>
                 <input type="file" onChange={handleImageChange} style={{marginBottom: '30px'}} />
-                <input type="text" value={caption} onChange={handleCaptionChange} placeholder="Enter caption" style={{width: 'calc(100% - 80px)', padding: '10px', borderRadius: '5px', border: 'none', marginBottom: '10px'}} />
-                <button onClick={handlePost} style={{backgroundColor: '#16a085', color: '#fff', padding: '10px', borderRadius: '5px', border: 'none', marginBottom: '50px'}}>Post</button>
+                <input type="text" value={caption} onChange={handleCaptionChange} placeholder="Enter caption" style={{width: 'calc(100% - 80px)', padding: '8px', borderRadius: '5px', border: '2px solid #16a085', marginBottom: '10px'}} />
+                <button onClick={handlePost} style={{backgroundColor: '#16a085', color: '#fff', padding: '10px', borderRadius: '5px', border: 'none', marginBottom: '50px', marginLeft:'10px'}}>Post</button>
                 {status && <div className="status">{status}</div>}
               </div>
               <div className="post-grid">
@@ -123,9 +140,8 @@ const Profile = () => {
                     </div>
                     <div className="post-caption" style={{fontSize: '25px', marginBottom: '25px'}}>{post.caption}</div>
                     <div className="post-image" style={{  borderRadius: '5px' }}>
-  <img src={`http://localhost:5000/uploads/${post.imagePath}`} alt="Post" className="post-picture" style={{ width: '350px', height: 'auto', borderRadius: '5px', marginBottom: '50px'}} />
-</div>
-
+                      <img src={`http://localhost:5000/uploads/${post.imagePath}`} alt="Post" className="post-picture" style={{ width: '350px', height: 'auto',border:'1px solid #16a085', borderRadius: '5px', marginBottom: '50px', boxShadow:'0px 2px 4px rgba(0, 0, 0, 0.1)'}} />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -135,6 +151,8 @@ const Profile = () => {
       </div>
       <Footer />
     </div>
+
+    
   );
 };
 

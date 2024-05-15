@@ -7,38 +7,48 @@ const Home = () => {
   const [profilePicture, setProfilePicture] = useState('');
   const [userData, setUserData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  
   const usersPerPage = 5;
-
   useEffect(() => {
-    // Fetch user data from the backend
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/users');
-        setSuggestions(response.data); // Set user data to state
-      
-        // Assuming the profile picture is stored in the first user's data
-        if (response.data.length > 0) {
-          setProfilePicture(response.data[0].profilePicture);
+        // Retrieve userId from session storage
+        const userId = sessionStorage.getItem("userId");
+        console.log("User Id from session storage:", userId); // Log userId
+  
+        // Check if userId is valid
+        if (!userId) {
+          console.error('User Id not found in session storage');
+          return;
         }
+  
+        // Fetch user data including suggestions
+        const response = await axios.get(`http://localhost:5000/users/${userId}`);
+        const userData = response.data;
+  
+        // Set user data to state
+        setUserData(userData);
+  
+        // Set profile picture
+        setProfilePicture(`http://localhost:5000/uploads/${userData.profilePicture}`);
+  
+        // Fetch user's suggestions
+        const suggestionsResponse = await axios.get('http://localhost:5000/users');
+        const suggestionsData = suggestionsResponse.data.filter(user => !userData.friends.includes(user._id));
+  
+        // Set suggestions to state
+        setSuggestions(suggestionsData);
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
-
-      const userId = sessionStorage.getItem("userId");
-      console.log("User Id from session storage:", userId);
-      if (userId) {
-        setUserData({ userId });
-        console.log("User Data:", { userId });
-        fetchPosts(userId); // Fetch posts for the user
-        fetchUserProfile(userId); // Fetch user profile data
-      }
     };
-
-    fetchUserData(); // Call the fetchUserData function
+  
+    fetchUserData();
   }, []);
 
   const fetchUserProfile = async (userId) => {
     try {
+      
       const response = await axios.get(`http://localhost:5000/users/${userId}`);
       setProfilePicture(`http://localhost:5000/uploads/${response.data.profilePicture}`);
     } catch (error) {
@@ -57,16 +67,17 @@ const Home = () => {
     }
   };
 
-  // Function to handle adding a friend
   const addFriend = async (userId, friendId) => {
     try {
-      // Make a POST request to add friend endpoint
+      const userId = sessionStorage.getItem("userId");
+      console.log("User Id from session storage:", userId); // Log userId
+      
+      console.log('Adding friend. userId:', userId, 'friendId:', friendId); // Log userId and friendId
       const response = await axios.post(`http://localhost:5000/add-friend`, {
         userId: userId,
         friendId: friendId
       });
-      console.log(response.data.message);
-
+      console.log('Friend added. Response:', response.data); // Log response data
       // Update the suggestions list after adding a friend
       const updatedSuggestions = suggestions.filter(user => user.id !== friendId);
       setSuggestions(updatedSuggestions);
@@ -74,7 +85,7 @@ const Home = () => {
       console.error('Error adding friend:', error);
     }
   };
-
+  
   // Logic for pagination
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -86,17 +97,17 @@ const Home = () => {
     <div>
      <Navbar profilePicture={profilePicture} />
       <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px' }}>
-        <div style={{ width: '25%' }}>
-          <h2>Suggestions:</h2>
+        <div style={{ width: '20%', marginLeft:'2%' }}>
+          <h2 className='third-font'><span className='color'>S</span>uggestions:</h2>
           <div>
             {/* Map through currentUsers array to render profile pictures, names, and add friend button */}
             {currentUsers.map((user) => (
               <div key={user.id} style={{ textAlign: 'center', marginTop: '20px', padding: '10px', border: '2px solid #16a085', borderRadius: '5px' }}>
-                <div style={{ marginBottom: '10px' }}>
-                  <img src={`http://localhost:5000/uploads/${user.profilePicture}`} alt="Profile" style={{ width: '100px', height: '100px', borderRadius: '50%', marginBottom: '10px' }} />
+                <div style={{ marginBottom: '2px' }}>
+                  <img src={`http://localhost:5000/uploads/${user.profilePicture}`} alt="Profile" style={{ width: '150px', height: '150px', borderRadius: '10%', marginBottom: '10px' }} />
                 </div>
-                <p style={{ fontWeight: 'bold' }}>{user.name}</p>
-                <button onClick={() => addFriend(userData.userId, user.id)} style={{ backgroundColor: '#16a085', color: '#fff', padding: '8px 16px', borderRadius: '5px', border: 'none' }}>Add Friend</button>
+                <p style={{ fontWeight: 'bold',marginBottom: '10px' }}>{user.name}</p>
+                <button onClick={() => addFriend(userData?.userId, user.id)} style={{ backgroundColor: '#16a085', color: '#fff', padding: '8px 16px', borderRadius: '5px', border: 'none' }}>Add Friend</button>
               </div>
             ))}
           </div>

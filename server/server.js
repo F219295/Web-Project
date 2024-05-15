@@ -45,6 +45,8 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   password: String,
   profilePicture: String, // Add profilePicture field
+  friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }] 
+  
 });
 const User = mongoose.model("User", userSchema);
 
@@ -132,7 +134,6 @@ app.get('/users/:userId', async (req, res) => {
 });
 app.get('/users/:userId', async (req, res) => {
   try {
-    // Extract userId from the request parameters
     const userId = req.params.userId;
 
     // Find user by ID
@@ -146,22 +147,51 @@ app.get('/users/:userId', async (req, res) => {
     const userData = {
       username: user.username,
       name: user.name,
-      email: user.email
+      email: user.email,
+      profilePicture: user.profilePicture
     };
 
-    // Send user data in the response
-    res.json(userData);
+    // Find users who are not in the current user's friend list
+    const users = await User.find({ _id: { $nin: user.friends, $ne: userId } }).select('-password');
+
+    res.json({ user: userData, suggestions: users });
   } catch (error) {
     console.error('Error fetching user data:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// Add this route definition to your Express server setup
+app.get('/friends/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    // Find user by ID
+    const user = await User.findById(userId).populate('friends', 'name profilePicture');
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Return only friend IDs, names, and profile pictures
+    const friendList = user.friends.map(friend => ({
+      _id: friend._id,
+      name: friend.name,
+      profilePicture: friend.profilePicture
+    }));
+
+    res.json(friendList);
+  } catch (error) {
+    console.error('Error fetching friend list:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 app.post("/add-friend", async (req, res) => {
   try {
     const { userId, friendId } = req.body;
+
+    console.log("Received userId:", userId);
+    console.log("Received friendId:", friendId);
 
     // Find the user by userId
     const user = await User.findById(userId);
@@ -176,6 +206,10 @@ app.post("/add-friend", async (req, res) => {
 
     // Add the friendId to the user's friend list
     user.friends.push(friendId);
+
+    console.log("Updated user with new friends:", user);
+
+    // Save the updated user document
     await user.save();
 
     res.status(200).json({ message: "Friend added successfully" });
@@ -189,13 +223,14 @@ app.post("/add-friend", async (req, res) => {
 app.get('/users', async (req, res) => {
   try {
     // Fetch all users from the database
-    const users = await User.find();
-    res.json(users);
+    const users = await User.find().select('-password'); // Exclude password field from the response
+    res.json(users.map(user => ({ ...user.toObject(), id: user._id }))); // Add id field to each user object
   } catch (error) {
     console.error('Error fetching users:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 app.post("/register", uploadImage.single('profilePicture'), async (req, res) => {
   try {
