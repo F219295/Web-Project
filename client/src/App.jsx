@@ -6,7 +6,7 @@ import Reset from "./Component/Reset";
 import Home from "./Component/home";
 import Profile from "./Component/Profile";
 import New from "./Component/New";
-
+import Hero from "./Component/Hero";
 
 export default function App() {
   return (
@@ -18,6 +18,7 @@ export default function App() {
    
       <Profile></Profile>
     <New></New>
+    <Hero></Hero>
     </>
   );
 }
