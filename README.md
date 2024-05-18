@@ -29,7 +29,7 @@ $ git clone https://github.com/F219295/Web-Project.git
 ### Contact Info
 
 > WhatsApp : 03204308025 
-> Email : mussadiqahmed90@gmail.com
+> , Email : mussadiqahmed90@gmail.com
 
 
 # Usage (run fullstack app on your machine)
