@@ -32,6 +32,7 @@ $ git clone https://github.com/F219295/Web-Project.git
 ```terminal
 $ cd client          // go to client folder
 $ npm i    // npm install packages
+$ npm i react-router-dom
 $ npm run dev        // run it locally
 ```
 ## Server-side
@@ -39,6 +40,12 @@ $ npm run dev        // run it locally
 ```terminal
 $ cd server          // go to server folder
 $ npm i    // npm install packages
+$ npm i express
+$ npm i mongoose
+$ npm i bcrypt
+$ npm i nodemailer
+$ npm i cors
+$ npm i multer
 $ npm run dev        // run it locally
 ```
 
@@ -49,3 +56,4 @@ $ npm run dev        // run it locally
 ![image](https://github.com/F219295/Web-Project/readme3)
 
 
+![image](https://github.com/F219295/Web-Project/assets/100989662/2965a362-eff1-40fb-93ff-6cb693048a2d)
