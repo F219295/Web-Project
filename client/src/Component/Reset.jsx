@@ -3,21 +3,34 @@ import axios from "axios";
 import "./Login.css"; // Import the login.css file
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faEnvelope } from '@fortawesome/free-solid-svg-icons';
-
+import { Link } from 'react-router-dom';
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [step, setStep] = useState(1); // 1 - Enter Email, 2 - Enter OTP, 3 - Reset Password
+  const [emailError, setEmailError] = useState("");
+  const [otpError, setOtpError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleSubmitEmail = async (e) => {
     e.preventDefault();
     try {
-      // Send email to server to generate and send OTP
-      await axios.post("http://localhost:5000/forgot-password", { email });
-      setStep(2);
+      // Check if the email is registered
+      const response = await axios.get(`http://localhost:5000/check-email?email=${email}`);
+      if (response.data.exists) {
+        // Send email to server to generate and send OTP
+        await axios.post("http://localhost:5000/forgot-password", { email });
+        setStep(2);
+        setEmailError("");
+        setOtpError("");
+        setSuccessMessage("OTP sent successfully. Please check your email for the OTP.");
+      } else {
+        setEmailError("* Email not registered");
+      }
     } catch (error) {
-      console.error("Error sending OTP:", error.response.data.error);
+      console.error("Error checking email:", error);
+      setEmailError("* Internal server error");
     }
   };
 
@@ -27,8 +40,11 @@ export default function ForgotPassword() {
       // Verify OTP
       await axios.post("http://localhost:5000/verify-otp", { email, otp });
       setStep(3);
+      setOtpError("");
+      setSuccessMessage("OTP verified successfully");
     } catch (error) {
-      console.error("Error verifying OTP:", error.response.data.error);
+      console.error("Error verifying OTP:", error);
+      setOtpError("* Invalid OTP");
     }
   };
 
@@ -37,17 +53,24 @@ export default function ForgotPassword() {
     try {
       // Reset password
       await axios.post("http://localhost:5000/reset-password", { email, newPassword });
-      alert("Password reset successful");
+      setSuccessMessage("Password reset successful");
       // Redirect user to login page or another appropriate page
+      window.location.href = '/Login'; 
     } catch (error) {
-      console.error("Error resetting password:", error.response.data.error);
+      console.error("Error resetting password:", error);
     }
   };
 
   return (
     <div className="container">
       <div className="wrapper">
-        <div className="title"><span>Reset Password</span></div>
+        <div className="title">
+          <span className="font">
+            {step === 1 && "Enter Email"}
+            {step === 2 && "Enter OTP"}
+            {step === 3 && "Reset Password"}
+          </span>
+        </div>
         
         {step === 1 && (
           <form onSubmit={handleSubmitEmail}>
@@ -61,8 +84,10 @@ export default function ForgotPassword() {
                 required
               />
             </div>
-            <div className="row button">
-              <button type="submit" className="button">Submit</button>
+            <div className="error" style={{ color: "red", fontWeight: "bold", fontFamily: "Arial, sans-serif" }}>{emailError}</div>
+            <div className="success" style={{ color: "green", fontWeight: "bold", fontFamily: "Arial, sans-serif" }}>{successMessage}</div>
+            <div className="row button" style={{ textAlign: "center" }}>
+              <button type="submit" style={{ backgroundColor: "#16a085", color: "white", padding: "10px", borderRadius: "5px", border: "none", marginTop: "10px" }}>Submit</button>
             </div>
           </form>
         )}
@@ -78,8 +103,10 @@ export default function ForgotPassword() {
                 required
               />
             </div>
-            <div className="row button">
-              <button type="submit" className="button">Submit</button>
+            <div className="error" style={{ color: "red", fontWeight: "bold", fontFamily: "Arial, sans-serif" }}>{otpError}</div>
+            <div className="success" style={{ color: "green", fontWeight: "bold", fontFamily: "Arial, sans-serif" }}>{successMessage}</div>
+            <div className="row button" style={{ textAlign: "center" }}>
+              <button type="submit" style={{ backgroundColor: "#16a085", color: "white", padding: "10px", borderRadius: "5px", border: "none", marginTop: "10px" }}>Submit OTP</button>
             </div>
           </form>
         )}
@@ -95,8 +122,9 @@ export default function ForgotPassword() {
                 required
               />
             </div>
-            <div className="row button">
-              <button type="submit" className="button">Reset Password</button>
+            <div className="success" style={{ color: "green", fontWeight: "bold", fontFamily: "Arial, sans-serif" }}>{successMessage}</div>
+            <div className="row button" style={{ textAlign: "center" }}>
+              <button type="submit" style={{ backgroundColor: "#16a085", color: "white", padding: "10px", borderRadius: "5px", border: "none", marginTop: "10px" }}>Reset Password</button>
             </div>
           </form>
         )}
