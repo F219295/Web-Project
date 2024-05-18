@@ -7,8 +7,10 @@ const Home = () => {
   const [profilePicture, setProfilePicture] = useState('');
   const [userData, setUserData] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  
-  const usersPerPage = 5;
+  const [posts, setPosts] = useState([]); // Add posts state
+
+  const usersPerPage = 1;
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -25,6 +27,7 @@ const Home = () => {
         // Fetch user data including suggestions
         const response = await axios.get(`http://localhost:5000/users/${userId}`);
         const userData = response.data;
+        userData.userId = userId; // Ensure userId is included in userData
   
         // Set user data to state
         setUserData(userData);
@@ -38,6 +41,11 @@ const Home = () => {
   
         // Set suggestions to state
         setSuggestions(suggestionsData);
+  
+        // Fetch friends' posts
+        userData.friends.forEach(async (friendId) => {
+          await fetchPosts(friendId);
+        });
       } catch (error) {
         console.error('Error fetching user data:', error);
       }
@@ -45,23 +53,20 @@ const Home = () => {
   
     fetchUserData();
   }, []);
-
-  const fetchUserProfile = async (userId) => {
-    try {
-      
-      const response = await axios.get(`http://localhost:5000/users/${userId}`);
-      setProfilePicture(`http://localhost:5000/uploads/${response.data.profilePicture}`);
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-    }
-  };
-
-  // Function to fetch posts for the user
+  
   const fetchPosts = async (userId) => {
     try {
-      // Fetch posts from the backend using userId
-      // Replace this with your actual implementation
       console.log('Fetching posts for user:', userId);
+      const response = await axios.get(`http://localhost:5000/posts/${userId}`);
+      console.log('Posts fetched:', response.data); // Log the posts fetched
+
+      // Ensure each post has a user object
+      const fetchedPosts = response.data.map(post => ({
+        ...post,
+        user: post.user || { profilePicture: '', name: 'Unknown User' }
+      }));
+
+      setPosts((prevPosts) => [...prevPosts, ...fetchedPosts]);
     } catch (error) {
       console.error('Error fetching posts:', error);
     }
@@ -69,10 +74,6 @@ const Home = () => {
 
   const addFriend = async (userId, friendId) => {
     try {
-      const userId = sessionStorage.getItem("userId");
-      console.log("User Id from session storage:", userId); // Log userId
-      
-      console.log('Adding friend. userId:', userId, 'friendId:', friendId); // Log userId and friendId
       const response = await axios.post(`http://localhost:5000/add-friend`, {
         userId: userId,
         friendId: friendId
@@ -86,6 +87,7 @@ const Home = () => {
     }
   };
   
+  
   // Logic for pagination
   const indexOfLastUser = currentPage * usersPerPage;
   const indexOfFirstUser = indexOfLastUser - usersPerPage;
@@ -95,23 +97,22 @@ const Home = () => {
 
   return (
     <div>
-     <Navbar profilePicture={profilePicture} />
+      <Navbar profilePicture={profilePicture} />
       <div style={{ display: 'flex', justifyContent: 'space-between', padding: '20px' }}>
-        <div style={{ width: '20%', marginLeft:'2%' }}>
+        <div style={{ width: '20%', marginLeft: '2%' }}>
           <h2 className='third-font'><span className='color'>S</span>uggestions:</h2>
           <div>
-            {/* Map through currentUsers array to render profile pictures, names, and add friend button */}
-            {currentUsers.map((user) => (
-              <div key={user.id} style={{ textAlign: 'center', marginTop: '20px', padding: '10px', border: '2px solid #16a085', borderRadius: '5px' }}>
-                <div style={{ marginBottom: '2px' }}>
-                  <img src={`http://localhost:5000/uploads/${user.profilePicture}`} alt="Profile" style={{ width: '150px', height: '150px', borderRadius: '10%', marginBottom: '10px' }} />
-                </div>
-                <p style={{ fontWeight: 'bold',marginBottom: '10px' }}>{user.name}</p>
-                <button onClick={() => addFriend(userData?.userId, user.id)} style={{ backgroundColor: '#16a085', color: '#fff', padding: '8px 16px', borderRadius: '5px', border: 'none' }}>Add Friend</button>
-              </div>
-            ))}
+          {currentUsers.map((user) => (
+  <div key={user._id} style={{ textAlign: 'center', marginTop: '20px', padding: '10px', border: '2px solid #16a085', borderRadius: '5px' }}>
+    <div style={{ marginBottom: '2px' }}>
+      <img src={`http://localhost:5000/uploads/${user.profilePicture}`} alt="Profile" style={{ width: '150px', height: '150px', borderRadius: '10%', marginBottom: '10px' }} />
+    </div>
+    <p style={{ fontWeight: 'bold', marginBottom: '10px' }}>{user.name}</p>
+    <button onClick={() => addFriend(userData?.userId, user._id)} style={{ backgroundColor: '#16a085', color: '#fff', padding: '8px 16px', borderRadius: '5px', border: 'none' }}>Add Friend</button>
+  </div>
+))}
+
           </div>
-          {/* Pagination */}
           <div style={{ marginTop: '20px' }}>
             {Array.from({ length: Math.ceil(suggestions.length / usersPerPage) }, (_, i) => (
               <button key={i} onClick={() => paginate(i + 1)} style={{ padding: '5px 10px', margin: '0 5px', backgroundColor: '#16a085', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}>
@@ -120,11 +121,30 @@ const Home = () => {
             ))}
           </div>
         </div>
-        <div style={{ width: '50%', textAlign: 'center' }}>
-          {/* Place your content here */}
-        </div>
-        <div style={{ width: '25%' }}>
-          <h2>Right Side</h2>
+      
+        <div style={{ width: '70%' }}>
+        <h2 className='third-font'><span className='color'>F</span>riends Post:</h2>
+          <div className="profile-right-section">
+            <div className="profile-info">
+              <div>
+                {userData && userData.status && <div className="status">{userData.status}</div>}
+              </div>
+              <div className="post-grid">
+                {posts.map((post) => (
+                  <div key={post._id} className="post">
+                    <div className="user-profile profile-pic icons2">
+                      <img src={`http://localhost:5000/uploads/${post.user.profilePicture}`} alt="Profile" className="profile-picture" />
+                      <span style={{ fontWeight: 'bold', marginLeft: '10px' }}>{post.user.name}</span>
+                    </div>
+                    <div className="post-caption" style={{ fontSize: '25px', marginBottom: '25px' }}>{post.caption}</div>
+                    <div className="post-image" style={{ borderRadius: '5px' }}>
+                      <img src={`http://localhost:5000/uploads/${post.imagePath}`} alt="Post" className="post-picture" style={{ width: '350px', height: 'auto', border: '1px solid #16a085', borderRadius: '5px', marginBottom: '50px', boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)' }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -132,3 +152,8 @@ const Home = () => {
 };
 
 export default Home;
+
+
+
+
+

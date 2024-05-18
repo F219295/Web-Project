@@ -3,7 +3,7 @@ import axios from "axios";
 import "./Login.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faEnvelope } from '@fortawesome/free-solid-svg-icons';
-
+import { Link } from 'react-router-dom';
 const Login = ({ onLogin }) => {
   const [credentials, setCredentials] = useState({
     email: "",
@@ -24,6 +24,7 @@ const Login = ({ onLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      
       const response = await axios.post("http://localhost:5000/login", credentials);
       console.log("Response:", response); // Log the response to check its structure
       if (response.status === 200) {
@@ -34,7 +35,9 @@ const Login = ({ onLogin }) => {
         sessionStorage.setItem("userId", user._id); // Store userId in session storage
         setSuccessMessage("Login successful");
         console.log("Stored userId:", sessionStorage.getItem("userId")); // Log stored userId
-      } else {
+        window.location.href = '/Home'; 
+      }
+       else {
         setErrorMessage("Failed to login");
       }
     } catch (error) {
@@ -46,7 +49,7 @@ const Login = ({ onLogin }) => {
   return (
     <div className="container">
       <div className="wrapper">
-        <div className="title"><span>Login Form</span></div>
+        <div className="title"><span className="font">Login</span></div>
         
         <form onSubmit={handleSubmit}>
           <div className="row">
@@ -73,11 +76,13 @@ const Login = ({ onLogin }) => {
           </div>
           <div className="error-message" style={{ color: "red", fontWeight: "bold", marginTop: "5px" }}>{errorMessage}</div>
           <div className="success-message" style={{ color: "green", fontWeight: "bold", marginTop: "5px" }}>{successMessage}</div>
-          <div className="pass"><a href="#">Forgot password?</a></div>
+          <div className="pass"><Link to='/reset'> Forgot password?</Link></div>
+        
           <div className="row button">
-            <input type="submit" value="Login" />
+         <input type="submit" value="Login" />
           </div>
-          <div className="signup-link">Not a member? <a href="#">Signup now</a></div>
+         
+          <div className="signup-link">Not a member? <Link to='/Signup'>Signup now</Link></div>
         </form>
       </div>
     </div>

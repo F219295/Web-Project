@@ -3,7 +3,7 @@ import axios from "axios";
 import "./Login.css"; // Import the login.css file
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faEnvelope } from '@fortawesome/free-solid-svg-icons';
-
+import { Link } from 'react-router-dom';
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -55,6 +55,7 @@ export default function ForgotPassword() {
       await axios.post("http://localhost:5000/reset-password", { email, newPassword });
       setSuccessMessage("Password reset successful");
       // Redirect user to login page or another appropriate page
+      window.location.href = '/Login'; 
     } catch (error) {
       console.error("Error resetting password:", error);
     }
@@ -64,7 +65,7 @@ export default function ForgotPassword() {
     <div className="container">
       <div className="wrapper">
         <div className="title">
-          <span>
+          <span className="font">
             {step === 1 && "Enter Email"}
             {step === 2 && "Enter OTP"}
             {step === 3 && "Reset Password"}

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEnvelope, faBell } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faBell, faHome, faUser } from '@fortawesome/free-solid-svg-icons';
 import logo from '../assets/logo3.jpg';
 import empty from '../assets/empty.jpg';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Navbar = ({ profilePicture }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -32,12 +33,11 @@ const Navbar = ({ profilePicture }) => {
   const handleLogout = () => {
     sessionStorage.removeItem('userId');
     setUserData(null);
-    window.location.reload();
+    window.location.href = '/Hero'; 
   };
 
   const handleSignIn = () => {
-    // Implement sign-in logic here
-    alert('Sign-in logic not implemented.');
+    window.location.href = '/Login';
   };
 
   return (
@@ -46,9 +46,19 @@ const Navbar = ({ profilePicture }) => {
         <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '10px', borderRadius: '10%' }} />
         <h2 className="second-font" style={{ margin: 0 }}><strong className='second-font'>Connectify</strong></h2>
       </div>
+     
       <div className="search">
         <input type="text" placeholder="Search" className="search-input" />
       </div>
+      <div className="option">
+        <Link to="/Home" className="option">
+          <FontAwesomeIcon icon={faHome} /><h4>Home</h4> 
+        </Link>
+        <Link to="/Profile" className="option">
+          <FontAwesomeIcon icon={faUser} /><h4>Profile</h4>
+        </Link>
+      </div>
+
       <div className="icons" style={{ display: 'flex', alignItems: 'center' }}>
         <div className="icon-border">
           <i><FontAwesomeIcon icon={faEnvelope} /></i>
@@ -65,18 +75,20 @@ const Navbar = ({ profilePicture }) => {
           {menuOpen && (
             <>
               <div className="menu-overlay" onClick={toggleMenu} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0, 0, 0, 0.5)', zIndex: 998 }}></div>
-              <div className="profile-menu" style={{ position: 'absolute', top: '50px', right: 0, background: '#fff', border: '1px solid #ccc', borderRadius: '5px', padding: '20px', zIndex: 999, width: '600%' }}>
+              <div className="profile-menu" style={{ position: 'absolute', top: '50px', right: 0, background: '#fff', border: '1px solid #ccc', borderRadius: '5px', padding: '20px', zIndex: 999, width: '650%' }}>
                 {userData ? (
                   <>
                     <p style={{ margin: 0 }}><strong className='color'>User Name:</strong> {userData.username}</p>
                     <p style={{ margin: 0 }}><strong className='color'>Name:</strong> {userData.name}</p>
                     <p style={{ margin: 0 }}><strong className='color'>Email:</strong> {userData.email}</p>
-                    <button onClick={handleLogout} style={{ margin: '10px 0', cursor: 'pointer', padding: '5px 10px', background: '#f00', color: '#fff', border: 'none' }}>Logout</button>
+                   <Link to='/Reset'> <button  style={{ margin: '10px 0', cursor: 'pointer', padding: '5px 10px', background: '#16a085',marginLeft:'6px', color: '#fff', border: 'none', borderRadius:'25px' }}>Change Password</button></Link>
+                    <button onClick={handleLogout} style={{ margin: '10px 0', cursor: 'pointer', padding: '5px 10px', background: '#f00',marginLeft:'12px', color: '#fff', border: 'none' , borderRadius:'25px'}}>Logout</button>
                   </>
                 ) : (
-                  <button onClick={handleSignIn} style={{ margin: '10px 0', cursor: 'pointer', padding: '5px 10px', background: '#16a085', color: '#fff', border: 'none' }}>Sign In</button>
+                  <Link to="/Login"> <button onClick={handleSignIn} style={{ margin: '10px 0', cursor: 'pointer', padding: '5px 10px', background: '#16a085', color: '#fff', border: 'none' }}>Sign In</button>
+                </Link>
                 )}
-                <button onClick={toggleMenu} style={{ cursor: 'pointer', padding: '5px 10px', background: '#ccc', color: '#000',marginLeft:'10px', border: 'none' }}>Close</button>
+                <button onClick={toggleMenu} style={{ cursor: 'pointer', padding: '5px 10px', background: '#ccc', color: '#000',marginLeft:'10px', border: 'none', borderRadius:'25px' }}>Close</button>
               </div>
             </>
           )}

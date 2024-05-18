@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import hero from '../assets/hero.png';
+import { Link } from 'react-router-dom';
 export default function Hero() {
   return (
     <div>
@@ -55,12 +56,13 @@ export default function Hero() {
             <p style={{ fontSize: '1.5em', marginBottom: '40px' }}>
               Welcome to <strong style={{color: '#16a085'}}>Connectify</strong>, your new web-based social media app. Stay connected with friends and family, share your moments, and explore new connections.
             </p>
-           
-            <button-hero className="button-hero" >
+           <Link to='/Login'>
+            <button className="button-hero" >
                 <strong>
               Get Started
               </strong>
-            </button-hero>
+            </button>
+            </Link>
           </div>
           <div style={{ flex: '1', textAlign: 'center' }}>
             <img src={hero} alt="Hero" style={{ maxWidth: '100%', height: 'auto' }} />

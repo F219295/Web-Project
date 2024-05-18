@@ -15,6 +15,9 @@ body{
   --third-font: "Poppins", sans-serif;
   
 }
+.font{
+  font-family: var(--second-font);
+}
 .second-font {
   font-family: var(--third-font);
 }
@@ -353,6 +356,7 @@ form .signup-link a:hover{
  /* Align items at the start and end of the navbar */
   padding: 10px;
   background-color: #16a085 !important;
+
 }
 
 .logo img,
@@ -400,11 +404,45 @@ form .signup-link a:hover{
   height: 50px;
   margin-top: 0px;
 }
+.option{
+  font-size: 25px;
+ 
+  cursor: pointer;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  width: 200px;
+  height: 50px;
+  
+  color: #c3eae2;
+  font-weight: 800;
+ padding-left: 20px;
 
+ 
+}
+.option:hover{
+  text-decoration: underline;
+  
+}
+.option h4{
+  font-size: 20px;
+  margin-left: 10px;
+  margin-top: 10px;
+
+  color: black;
+}
 .icons2 {
   display: flex;
   align-items: center;
   width: 200px;
+  height: 50px;
+  margin-top: 3px;
+}
+
+.icons3 {
+  display: flex;
+  align-items: center;
+  width: 400px;
   height: 50px;
   margin-top: 3px;
 }
