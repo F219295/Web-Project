@@ -24,7 +24,7 @@ $ git clone https://github.com/F219295/Web-Project.git
 - [Signup / Signin]
 - [HomePage]
 - [Profile]
-- [LiveChat]
+- [Admin Dashboard]
 
 # Usage (run fullstack app on your machine)
 
@@ -51,9 +51,15 @@ $ npm run dev        // run it locally
 
 ### Screenshots of this project
 
-![image](https://github.com/F219295/Web-Project/client/src/assets/logo.png)
-![image](https://github.com/F219295/Web-Project/assets/readme2)
-![image](https://github.com/F219295/Web-Project/readme3)
-
-
 ![image](https://github.com/F219295/Web-Project/assets/100989662/2965a362-eff1-40fb-93ff-6cb693048a2d)
+![image](https://github.com/F219295/Web-Project/assets/100989662/62e6621a-01de-4c4b-b324-7acade56d7e8)
+![image](https://github.com/F219295/Web-Project/assets/100989662/e73a328f-7f5c-4cd0-9457-7415771b29d8)
+![image](https://github.com/F219295/Web-Project/assets/100989662/0b390335-ec38-4ac7-8b72-d10bc415127a)
+![image](https://github.com/F219295/Web-Project/assets/100989662/96e96706-c8e2-4967-a8b6-541d5b64c626)
+
+
+### Contact Info
+
+> WhatsApp : 03204308025
+> email : mussadiqahmed90@gmail.com
+
